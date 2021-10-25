@@ -4,6 +4,7 @@ ThermEvol
 Simple scripts to compute thermal evolution models for the Earth.
 
 Two alternative models are provided here:
+
 * ThermEvol.py
 The simplest possible model, using a standard scaling law for the mantle heat
 flow as function of the Rayleigh number.
@@ -16,6 +17,7 @@ The calculation is done both forward in time, from a temperature
 The foward in time calculation gives a present surface heat flow lower than
 the one observed. The backward calculation leads to the classical thermal
 catastrophe at about 1Gyr age.
+
 * ThermEvol_LJ.py
 The model proposed by Labrosse and Jaupart (2007)
 (https://doi.org/10.1016/j.epsl.2007.05.046).
