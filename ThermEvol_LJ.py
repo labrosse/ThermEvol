@@ -21,6 +21,36 @@ import sys
 mpl.rc('font', family='sans-serif', size=7, **{'sans-serif': ['Arial']})
 mpl.rcParams['pdf.fonttype'] = 42
 
+# Set the annotations here, with classic french and english choices
+# as examples.
+# root name for files, may depend on the language choice
+# language = 'French'
+language = 'French'
+if language == 'French':
+    contlabel = r'Surface continental, \%'
+    templabel = r'Température potentielle, C'
+    agelabel = r'Âge, Ga'
+    powlabel = r'Puissance, TW'
+    Qtlabel = r'Flux de chaleur total en surface'
+    radlabel = r'Production radioactive totale'
+    oceanlabel = r'Flux de chaleur océanique'
+    mant2cont = r'Flux manteau $\rightarrow$ continents'
+    contprod = r'Production de chaleur continentale'
+    mantprod = r'Production de chaleur mantellique'
+    root = 'fr_'
+else: # default language = 'English':
+    contlabel = r'Continental area, \%'
+    templabel = r'Potential temperature, C'
+    agelabel = r'Age, Gyr'
+    powlabel = r'Power, TW'
+    Qtlabel = r'Total surface heat flow'
+    radlabel = r'Total radiogenic heating'
+    oceanlabel = r'Oceanic heat flow'
+    mant2cont = r'Mantle to continents heat flow'
+    contprod = r'Continental heat production'
+    mantprod = r'Mantle heat production'
+    root = 'en_'
+
 # physical parameters
 year = 365 * 24 * 3600 # year in seconds
 ME = 5.972e24 # mass of the Earth in kg
@@ -157,23 +187,23 @@ def plot_evol_LJ(tt, Tm, QQoc, QQco, HHco, rSco, Hr, text, annot=None):
     fig.tight_layout()
     # continental fraction as function of time
     axe[0].plot(tt*1e-9, rSco)
-    axe[0].set_ylabel('Continental area, %')
+    axe[0].set_ylabel(contlabel)
     # temperature as function of time
     axe[1].plot(tt*1e-9, Tm)
-    axe[1].set_ylabel('Potential temperature, C')
+    axe[1].set_ylabel(templabel)
 
     # surface heat flow and radioactive heating as function of time
     Qt = QQoc + QQco +HHco
-    ln1 = axe[2].plot(tt*1e-9, Qt * 1e-12, label='Total surface heat flow')
-    ln2 = axe[2].plot(tt*1e-9, Hr * 1e-12, label='Total radiogenic heating')
+    ln1 = axe[2].plot(tt*1e-9, Qt * 1e-12, label=Qtlabel)
+    ln2 = axe[2].plot(tt*1e-9, Hr * 1e-12, label=radlabel)
     # various contributions
-    ln3 = axe[2].plot(tt*1e-9, QQoc * 1e-12, '--', label='Oceanic heat flow')
-    ln4 = axe[2].plot(tt*1e-9, QQco * 1e-12, '--', label='Mantle to continents heat flow')
-    ln5 = axe[2].plot(tt*1e-9, HHco * 1e-12, '--', label='Continental heat production')
-    ln6 = axe[2].plot(tt*1e-9, (Hr - HHco) * 1e-12, '--', label='Mantle heat production')
+    ln3 = axe[2].plot(tt*1e-9, QQoc * 1e-12, '--', label=oceanlabel)
+    ln4 = axe[2].plot(tt*1e-9, QQco * 1e-12, '--', label=mant2cont)
+    ln5 = axe[2].plot(tt*1e-9, HHco * 1e-12, '--', label=contprod)
+    ln6 = axe[2].plot(tt*1e-9, (Hr - HHco) * 1e-12, '--', label=mantprod)
     axe[1].set_xlim([-amax * 1e-9, 0])
-    axe[2].set_xlabel('Age, Gyr')
-    axe[2].set_ylabel('Power, TW')
+    axe[2].set_xlabel(agelabel)
+    axe[2].set_ylabel(powlabel)
     lns = ln1 + ln2 +  ln3 + ln4 + ln5 + ln6
     labs = [l.get_label() for l in lns]
     axe[2].legend(lns, labs, ncol=2, loc='upper right')
@@ -183,7 +213,7 @@ def plot_evol_LJ(tt, Tm, QQoc, QQco, HHco, rSco, Hr, text, annot=None):
             plt.text(0.01, 0.99, ann, ha='left', va='top',
                  transform=ax.transAxes, fontsize=8, weight='bold')
 
-    plt.savefig(text+'_ThEvol_LJ.pdf', bbox_inches='tight')
+    plt.savefig(root+text+'_ThEvol_LJ.pdf', bbox_inches='tight')
     plt.close()
 
 # timestep - in years
