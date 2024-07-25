@@ -14,6 +14,30 @@ from scipy.integrate import ode
 mpl.rc('font', family='sans-serif', size=7, **{'sans-serif': ['Arial']})
 mpl.rcParams['pdf.fonttype'] = 42
 
+# Set the annotations here, with classic french and english choices
+# as examples.
+# root name for files, may depend on the language choice
+# language = 'French'
+language = 'English'
+if language == 'French':
+    templabel = r'Température potentielle, C'
+    agelabel = r'Âge, Ga'
+    powlabel = r'Puissance, TW'
+    Qtlabel = r'Flux de chaleur en surface'
+    radlabel = r'Production radioactive'
+    Urlabel = r"Nombre d'Urey"
+    lUrlabel = r"Nombre d'Urey final = "
+    root = 'fr_'
+else: # default language = 'English':
+    templabel = r'Potential temperature, C'
+    agelabel = r'Age, Gyr'
+    powlabel = r'Power, TW'
+    Qtlabel = r'Surface heat flow'
+    radlabel = r'Radiogenic heating'
+    Urlabel = r'Urey number'
+    lUrlabel = r'Last Urey number ='
+    root = 'en_'
+
 # physical parameters
 year = 365 * 24 * 3600 # year in seconds
 ME = 5.972e24 # mass of the Earth in kg
@@ -78,36 +102,38 @@ def plot_evol(tt, Tm, Qt, Hr, text, annot=None):
     fig, axe = plt.subplots(2, 1, sharex=True, figsize=(3, 5))
     fig.tight_layout()
     axe[0].plot(tt*1e-9, Tm)
-    axe[0].set_ylabel('Potential temperature, C')
+    axe[0].set_ylabel(templabel)
 
     # surface heat flow and radioactive heating as function of time
-    ln1 = axe[1].plot(tt*1e-9, Qt * 1e-12, label='Surface heat flow')
-    ln2 = axe[1].plot(tt*1e-9, Hr * 1e-12, label='Radiogenic heating')
+    ln1 = axe[1].plot(tt*1e-9, Qt * 1e-12, label=Qtlabel)
+    ln2 = axe[1].plot(tt*1e-9, Hr * 1e-12, label=radlabel)
     axe[1].set_ylim([15, 200])
-    axe[1].set_xlabel('Age, Gyr')
-    axe[1].set_ylabel('Power, TW')
+    axe[1].set_xlabel(agelabel)
+    axe[1].set_ylabel(powlabel)
     lns = ln1 + ln2
 
+    loc = 'upper right'
     if text=='fw':
         # Urey number on the same plot, different y axis
         ax2 = axe[1].twinx()
         lastU = Hr[-1]/Qt[-1]
         print(text, " final Urey number =", lastU)
+        label = lUrlabel + '{:04.2f}'.format(lastU)
         ln3 = ax2.plot([tt[0]*1e-9, tt[-1]*1e-9], [lastU, lastU],
-                    '--', c='k', label='Last Urey #={:04.2f}'.format(lastU))
-        ax2.set_ylabel('Urey number')
-        ln4 = ax2.plot(tt*1e-9, Hr/Qt, label='Urey #', c='g')
+                    '--', c='k', label=label)
+        ax2.set_ylabel(Urlabel)
+        ln4 = ax2.plot(tt*1e-9, Hr/Qt, label=Urlabel, c='g')
         # ax2.legend(loc='center right')
+        loc = 'center right'
         lns += ln4 + ln3 
     labs = [l.get_label() for l in lns]
-    axe[1].legend(lns, labs, loc='center right')
+    axe[1].legend(lns, labs, loc=loc)
 
     if annot is not None:
         for ax, ann in zip(axe, annot):
             plt.text(0.01, 0.99, ann, ha='left', va='top',
                  transform=ax.transAxes, fontsize=8, weight='bold')
-
-    plt.savefig(text+'_ThEvol.pdf', bbox_inches='tight')
+    plt.savefig(root+text+'_ThEvol.pdf', bbox_inches='tight')
     plt.close()
 
 # timestep
